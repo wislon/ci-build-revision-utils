@@ -7,12 +7,14 @@ This is a couple of .NET exes I built over a couple of hours to automate the inc
 * Xamarin/Android `AndroidManifest.xml` files
 * .NET `AssemblyInfo` related files
 
-#### Why?
-Xamarin.Android apps contain both. And I got tired of forgetting to fix one or the other, especially when there's a few of them. And if it's friction, or a pain point for me, I prefer to automate it away if I can. And this is the stupidest thing that actually works. 
+#### Why bother?
+Xamarin.Android apps contain both kinds of version resources. And I got tired of incrementing one and forgetting to do the others. And if it's friction, or a pain point for me, I prefer to automate it away if I can. 
+
+So this is the stupidest thing that actually works. 
 
 All these utilities do is load and parse a given file name looking for specific string/regex matches. If they are able to locate the requested bits of information, they'll auto-increment the __build revision #__, and write the file back out again.
 
-That is all they do. Their primary function is simply to operate as part of a custom build/build-tool chain, so it's up to the developer to integrate them with their CI process (examples below).
+And that is _all_ they do. Their primary function is simply to operate as part of a custom build/build-tool chain, so it's up to the developer to integrate them with their CI process (examples below).
 
 _Yes, I know, TeamCity and some other CI toolkits can do this too. I can't use TeamCity in a couple of current projects, which is why I slapped these little guys together._
 
