@@ -37,7 +37,7 @@ Normally when you build your Android app, you have to provide two version values
 
 The `versionCode` value is a single integer used by the Google Play store to determine whether the app is a newer version than one it already has. 
 
-The `versionName` is a set of numbers (and perhaps other identifiers, as described above, which you can use for "proper" version tracking in your app (maybe for analytics or crash reporting or something else). 
+The `versionName` is a set of numbers (and perhaps other identifiers), as described above, which you can use for "proper" version tracking in your app; maybe for analytics or crash reporting or something else). 
 
 `AndroidManifestUtil` extracts the `versionName` attribute from the `manifest` xml node, tries to parse it to extract the 4 numbers, increments the last one (the build revision), and writes it back to the file. 
 
@@ -46,7 +46,7 @@ If you've got some funky version numbering you do (e.g. '1.0.rc-02.02Jan2014'), 
 `AndroidManifestUtil` doesn't change the `versionCode` at all (that's up to you to do when you're ready to publish, since not every build that you do will be worth pushing up to Google Play). 
 
 #### Usage
-Theres's a test `AndroidManifest.xml` file which looks something like:
+Theres's a test `AndroidManifest.xml` file in the project folder which looks something like:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
