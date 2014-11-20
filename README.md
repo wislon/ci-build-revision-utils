@@ -1,8 +1,8 @@
 ci-build-revision-utils
 =======================
 
-### Continuous Integration :: Build-Revision CLI utilities
-The stupidest thing that just works. 
+### Continuous Integration :: Simple Build-Revision CLI utilities
+The stupidest thing that actually works. 
 
 This is a couple of .NET exes I built over a couple of hours to automate the incrementing of build revision numbers in 
 
@@ -25,7 +25,7 @@ That is all they do.
 
 _Yes, they could do so much more, and I'm sure you've got a million ideas about how yours would be 10x more awesome. But this solved an immediate problem I had._
 
-### AndroidManifestUtil
+### AndroidManifestUtil (for AndroidManifest.xml files)
 This updates the `AndroidManifest.xml` file commonly found in Android and Xamarin.Android projects.
 
 Normally when you build your Android app, you have to provide two version values, a version __code__ (`versionCode` in the manifest file) and a version __name__ (`versionName` in the manifest file).
@@ -81,7 +81,17 @@ Writing out updated manifest file: .\AndroidManifest.xml
 Done
 ```
 
-### AssemblyInfoUtil
+...and now it looks like:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<!-- dummy xml file for /manifest/android:versionName attribute revision # increment testing -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto" package="io.wislon.testApp" android:versionCode="1" android:versionName="1.0.2.1">
+<snip />
+</manifest>
+```
+
+### AssemblyInfoUtil (for updating .NET AssemblyInfo-related files)
 This updates the `AssemblyVersion` and `AssemblyFileVersion` values commonly found in `AssemblyInfo.cs` (or global/shared versions of them) in .NET projects. 
 
 It simply opens the file you specify (as text), and searches for for the quartet of numbers. If it finds one (or both), it will parse out the build revision #, increment it, and then write it back to the file.
@@ -135,3 +145,15 @@ With the result:
 [assembly: AssemblyFileVersion("1.0.2.1")]
 ```
 
+And that's pretty much it.
+
+Sure, they can be tweaked to add flags for turn this on, but don't do this, or ignore this thing and do that instead. But this was the simplest thing that actually worked and did exactly what I need it to do.
+
+### Build Loops
+Be careful when you integrate this methodology with CI servers that push and pull code changes and rebuild on new changes that appear in your source control system. If your build script increments the number (as it's supposed to), and then pushes the update back to source control, and your source control triggers a build because of the new code change, you'll end up in a build/commit/push/trigger/pull/build loop. 
+
+What? 
+
+Andrew Harcourt ([@uglybugger](https://twitter.com/uglybugger)) has more on this: https://twitter.com/uglybugger/status/531056237681442816  (and provides a solution over at [https://teamcity-github-filter.azurewebsites.net/](https://teamcity-github-filter.azurewebsites.net/)).
+
+_Released under the free-for-all MIT License, so if you want to copy it and do better stuff with it, go right ahead! :)_
