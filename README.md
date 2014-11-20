@@ -2,18 +2,19 @@ ci-build-revision-utils
 =======================
 
 ### Continuous Integration :: Simple Build-Revision CLI utilities
-The stupidest thing that actually works. 
-
 This is a couple of .NET exes I built over a couple of hours to automate the incrementing of build revision numbers in 
 
 * Xamarin/Android `AndroidManifest.xml` files
 * .NET `AssemblyInfo` related files
 
-All they do is load and parse a given file name looking for specific string/regex matches. If they are able to locate the requested bits of information, they'll auto-increment the __build revision #__, and write the file back out again.
+#### Why?
+Xamarin.Android apps contain both. And I got tired of forgetting to fix one or the other, especially when there's a few of them. And if it's friction, or a pain point for me, I prefer to automate it away if I can. And this is the stupidest thing that actually works. 
+
+All these utilities do is load and parse a given file name looking for specific string/regex matches. If they are able to locate the requested bits of information, they'll auto-increment the __build revision #__, and write the file back out again.
 
 That is all they do. Their primary function is simply to operate as part of a custom build/build-tool chain, so it's up to the developer to integrate them with their CI process (examples below).
 
-_Yes, I know, TeamCity and some other CI toolkits can do stuff like this too. I can't use TeamCity in a couple of current projects, which is why I slapped these little programs together._
+_Yes, I know, TeamCity and some other CI toolkits can do this too. I can't use TeamCity in a couple of current projects, which is why I slapped these little guys together._
 
 Application versions are displayed as a set of numbers indicating major version, minor version, build # and build revision. This is usually displayed in the format: `1.0.1.2` or `1.0.2.0-alpha` or something similar. Normally what happens when you (re)build an app, these would be incremented automatically for you. Some "increments" aren't actually increments. They could be git commit hashes, timestamps, you name it.
 
@@ -156,12 +157,14 @@ And that's pretty much it.
 Sure, they can be tweaked to add flags for turn this on, but don't do this, or ignore this thing and do that instead. But this was the simplest thing that actually worked and did exactly what I need it to do.
 
 ### Build Loops
-Be careful when you integrate this kind of thing with CI servers that push and pull code changes and rebuild on new changes that appear in your source control system. 
+Be careful when you integrate this kind of thing with CI servers or services (like TeamCity) that push and pull code changes and rebuild on new changes that appear in your source control system. 
 
 If your build script increments the number (as it's supposed to), and then pushes the update back to source control, and your source control triggers a build because of the new code change, you'll end up in a build/commit/push/trigger/pull/increment/build loop. 
 
-What? Is? This? I can't even...
+What is this? I can't even...
 
-In the spirit of "I needed this now, and since I'm publishing it for me, I may as well put it up for other folks", Andrew Harcourt ([@uglybugger](https://twitter.com/uglybugger)) provides a possible solution over at [https://teamcity-github-filter.azurewebsites.net/](https://teamcity-github-filter.azurewebsites.net/)).
+This is not your build server's fault. Nor your source control's. But it's not always an easy fix. One of them has to be told how to ignore the other in certain cases, so it doesn't start the loop.
 
-_Released under the free-for-all MIT License, so if you want to copy it and do better stuff with it, go right ahead! :)_
+...and in the spirit of "I needed this now, and since I'm publishing it for me, I may as well put it up for other folks", Andrew Harcourt ([@uglybugger](https://twitter.com/uglybugger)) provides a possible solution over at [https://teamcity-github-filter.azurewebsites.net/](https://teamcity-github-filter.azurewebsites.net/)).
+
+_Released under the free-for-all MIT License, so if you want to copy it and do better stuff with it, you go right ahead! :)_
