@@ -150,10 +150,12 @@ And that's pretty much it.
 Sure, they can be tweaked to add flags for turn this on, but don't do this, or ignore this thing and do that instead. But this was the simplest thing that actually worked and did exactly what I need it to do.
 
 ### Build Loops
-Be careful when you integrate this methodology with CI servers that push and pull code changes and rebuild on new changes that appear in your source control system. If your build script increments the number (as it's supposed to), and then pushes the update back to source control, and your source control triggers a build because of the new code change, you'll end up in a build/commit/push/trigger/pull/build loop. 
+Be careful when you integrate this kind of thing with CI servers that push and pull code changes and rebuild on new changes that appear in your source control system. 
 
-What? 
+If your build script increments the number (as it's supposed to), and then pushes the update back to source control, and your source control triggers a build because of the new code change, you'll end up in a build/commit/push/trigger/pull/increment/build loop. 
 
-Andrew Harcourt ([@uglybugger](https://twitter.com/uglybugger)) has more on this: https://twitter.com/uglybugger/status/531056237681442816  (and provides a solution over at [https://teamcity-github-filter.azurewebsites.net/](https://teamcity-github-filter.azurewebsites.net/)).
+What? Is? This? I can't even...
+
+In the spirit of "I needed this now, and since I'm publishing it for me, I may as well put it up for other folks", Andrew Harcourt ([@uglybugger](https://twitter.com/uglybugger)) provides a possible solution over at [https://teamcity-github-filter.azurewebsites.net/](https://teamcity-github-filter.azurewebsites.net/)).
 
 _Released under the free-for-all MIT License, so if you want to copy it and do better stuff with it, go right ahead! :)_
