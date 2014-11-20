@@ -18,13 +18,15 @@ And that is _all_ they do. Their primary function is simply to operate as part o
 
 _Yes, I know, TeamCity and some other CI toolkits can do this too. I can't use TeamCity in a couple of current projects, which is why I slapped these little guys together._
 
-Application versions are displayed as a set of numbers indicating major version, minor version, build # and build revision. This is usually displayed in the format: `1.0.1.2` or `1.0.2.0-alpha` or something similar. Normally what happens when you (re)build an app, these would be incremented automatically for you. Some "increments" aren't actually increments. They could be git commit hashes, timestamps, you name it.
+Application versions are displayed as a set of numbers indicating 
+
+`major_version.minor_version.build_#.build_revision`
+
+This is usually displayed in the format: `1.0.1.2` or `1.0.2.0-alpha` or something similar. Normally what happens when you (re)build an app, these would be incremented automatically for you. Some "increments" aren't actually increments. They could be git commit hashes, timestamps, you name it.
 
 In the case of these utilities, all they do is try and locate something that looks like a set of numbers like this, and if they find it, they'll increment the build revision # (the last number in the quartet).
 
 For example, if the existing version # is 1.2.3.4, then running these utilities will simply update that last digit to 1.2.3.5. 
-
-That is all they do. 
 
 _Yes, they could do so much more, and I'm sure you've got a million ideas about how yours would be 10x more awesome. But this solved an immediate problem I had._
 
