@@ -165,7 +165,7 @@ Be careful when you integrate this kind of thing with CI servers or services (li
 
 If your build script increments the number (as it's supposed to), and then pushes the update back to source control, and your source control triggers a build because of the new code change, you'll end up in a build/commit/push/trigger/pull/increment/build loop. 
 
-![](https://github.com/wislon/ci-build-revision-utils/blob/master/res/tesseract.gif)
+![CC image of http://en.wikipedia.org/wiki/File:Tesseract.gif](https://github.com/wislon/ci-build-revision-utils/blob/master/res/tesseract.gif)
 
 What is this? I can't even...
 
@@ -173,4 +173,5 @@ This is not your build server's fault. Nor your source control's. But it's not a
 
 ...and in the spirit of "I needed this now, and since I'm publishing it for me, I may as well put it up for other folks", Andrew Harcourt ([@uglybugger](https://twitter.com/uglybugger)) provides a possible solution over at [https://teamcity-github-filter.azurewebsites.net/](https://teamcity-github-filter.azurewebsites.net/)).
 
-_Released under the free-for-all MIT License, so if you want to copy it and do better stuff with it, you go right ahead! :)_
+### License
+_The utils in this repo released under the free-for-all MIT License, so if you want to copy it and do better stuff with it, you go right ahead! :)_
