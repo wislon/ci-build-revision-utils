@@ -46,7 +46,10 @@ Theres's a test `AndroidManifest.xml` file which looks something like:
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <!-- dummy xml file for /manifest/android:versionName attribute revision # increment testing -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto" package="io.wislon.testApp" android:versionCode="1" android:versionName="1.0.2.0">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" 
+android:installLocation="auto" package="io.wislon.testApp" 
+android:versionCode="1" 
+android:versionName="1.0.2.0">
   <uses-sdk android:minSdkVersion="15" android:targetSdkVersion="19" />
   <application android:icon="@drawable/Icon" android:label="testApp">
   </application>
@@ -86,7 +89,10 @@ Done
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <!-- dummy xml file for /manifest/android:versionName attribute revision # increment testing -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto" package="io.wislon.testApp" android:versionCode="1" android:versionName="1.0.2.1">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" 
+android:installLocation="auto" package="io.wislon.testApp" 
+android:versionCode="1" 
+android:versionName="1.0.2.1">
 <snip />
 </manifest>
 ```
