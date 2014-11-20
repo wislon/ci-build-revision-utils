@@ -165,6 +165,8 @@ Be careful when you integrate this kind of thing with CI servers or services (li
 
 If your build script increments the number (as it's supposed to), and then pushes the update back to source control, and your source control triggers a build because of the new code change, you'll end up in a build/commit/push/trigger/pull/increment/build loop. 
 
+![](https://github.com/wislon/ci-build-revision-utils/blob/master/res/tesseract.gif)
+
 What is this? I can't even...
 
 This is not your build server's fault. Nor your source control's. But it's not always an easy fix. One of them has to be told how to ignore the other in certain cases, so it doesn't start the loop.
