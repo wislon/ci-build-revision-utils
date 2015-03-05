@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace AndroidManifestUtil
@@ -19,9 +15,9 @@ namespace AndroidManifestUtil
     {
       if (args.Length < 1)
       {
-        Console.WriteLine("Usage: AndroidManifestUtil.exe -filename=<file containing assembly version>");
+        Console.WriteLine("Usage: AndroidManifestUtil.exe -filename=<path\\to\\manifest.xml file>");
         Console.WriteLine(
-          "e.g. AndroidManifestUtil.exe ..\\src\\MyProject\\Properties\\AndroidManifest.xml\tWill increment the build revision in manifest/android:versionName");
+          "e.g. AndroidManifestUtil.exe ..\\src\\MyProject\\Properties\\AndroidManifest.xml\tWill increment the version code in manifest/android:versionCode, and build revision in manifest/android:versionName");
       }
       else
       {
@@ -30,12 +26,54 @@ namespace AndroidManifestUtil
         if (string.IsNullOrWhiteSpace(fileName)) throw new ArgumentException("Version file name must not be empty");
         if (!File.Exists(fileName)) throw new ArgumentException(string.Format("Couldn't locate file '{0}'", fileName));
 
+        LoadAndUpdateVersionCodeFor(fileName);
         LoadAndUpdateBuildRevisionFor(fileName);
       }
 
       // Console.ReadLine();
     }
 
+    /// <summary>
+    /// Tries to locate and increment the 'android:versionCode' attribute of the 'manifest' tag
+    /// </summary>
+    /// <param name="fileName"></param>
+    private static void LoadAndUpdateVersionCodeFor(string fileName)
+    {
+      Console.ForegroundColor = ConsoleColor.Green;
+      Console.WriteLine("Loading {0}", fileName);
+      var xmldoc = new XmlDocument();
+      xmldoc.Load(fileName);
+      Console.WriteLine("Loaded {0}", fileName);
+
+      Console.WriteLine("Loading manifest node...");
+      var manifestNode = xmldoc.SelectSingleNode("/manifest");
+      Console.WriteLine("Getting manifest attributes...");
+      var attributes = manifestNode.Attributes;
+      var versionCode = attributes.GetNamedItem("android:versionCode");
+      if (versionCode != null)
+      {
+        Console.WriteLine("Found android:versionCode attribute: {0}", versionCode.Value);
+        int newValue = int.Parse(versionCode.Value);
+        versionCode.Value = string.Format("{0}", ++newValue);
+        Console.WriteLine("Updating android:versionName attribute to {0}", versionCode.Value);
+        manifestNode.Attributes.SetNamedItem(versionCode);
+        Console.WriteLine("Writing out updated manifest file: {0}", fileName);
+        xmldoc.Save(fileName);
+      }
+      else
+      {
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine("Did not find android:versionCode attribute, aborting!");
+        Console.ResetColor();
+      }
+      Console.ResetColor();
+      Console.WriteLine("Done");
+    }
+
+    /// <summary>
+    /// Tries to locate and update the 'android:versionName' attribute of the 'manifest' tag
+    /// </summary>
+    /// <param name="fileName"></param>
     private static void LoadAndUpdateBuildRevisionFor(string fileName)
     {
       Console.ForegroundColor = ConsoleColor.Green;
