@@ -76,16 +76,23 @@ AndroidManifestUtil.exe -filename=.\AndroidManifest.xml
 It'll give you some basic info about what it's doing, or if it's got a problem:
 
 ```text
-D:\test\AndroidManifestUtil.exe -filename=.\AndroidManifest.xml
-Loading .\AndroidManifest.xml
-Loaded .\AndroidManifest.xml
+Loading D:\Test\AndroidManifest.xml
+Loaded D:\Test\AndroidManifest.xml
+Loading manifest node...
+Getting manifest attributes...
+Found android:versionCode attribute: 1
+Updating android:versionName attribute to 2
+Writing out updated manifest file: D:\Test\AndroidManifest.xml
+Done
+Loading D:\Test\AndroidManifest.xml
+Loaded D:\Test\AndroidManifest.xml
 Loading manifest node...
 Getting manifest attributes...
 Found android:versionName attribute: 1.0.2.0
 Current build revision: '1.0.2.0'
 New build revision: 1.0.2.1
 Updating android:versionName attribute to 1.0.2.1
-Writing out updated manifest file: .\AndroidManifest.xml
+Writing out updated manifest file: D:\Test\AndroidManifest.xml
 Done
 ```
 
@@ -96,7 +103,7 @@ Done
 <!-- dummy xml file for /manifest/android:versionName attribute revision # increment testing -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" 
 android:installLocation="auto" package="io.wislon.testApp" 
-android:versionCode="1" 
+android:versionCode="2" 
 android:versionName="1.0.2.1">
 <snip />
 </manifest>
