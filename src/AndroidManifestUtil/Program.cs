@@ -15,7 +15,7 @@ namespace AndroidManifestUtil
     {
       if (args.Length < 1)
       {
-        Console.WriteLine("Usage: AndroidManifestUtil.exe -filename=<path\\to\\manifest.xml file>");
+        Console.WriteLine("Usage: AndroidManifestUtil.exe -filename=<path\\to\\AndroidManifest.xml>");
         Console.WriteLine(
           "e.g. AndroidManifestUtil.exe ..\\src\\MyProject\\Properties\\AndroidManifest.xml\tWill increment the version code in manifest/android:versionCode, and build revision in manifest/android:versionName");
       }
