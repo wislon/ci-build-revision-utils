@@ -41,9 +41,11 @@ The `versionName` is a set of numbers (and perhaps other identifiers), as descri
 
 `AndroidManifestUtil` extracts the `versionName` attribute from the `manifest` xml node, tries to parse it to extract the 4 numbers, increments the last one (the build revision), and writes it back to the file. 
 
-If you've got some funky version numbering you do (e.g. '1.0.rc-02.02Jan2014'), then you're on your own.
+It will also extract the `versionCode` attribute from the `manifest` xml node, increment it, and writes it back to the file. 
 
-`AndroidManifestUtil` doesn't change the `versionCode` at all (that's up to you to do when you're ready to publish, since not every build that you do will be worth pushing up to Google Play). 
+_The Google Play store depends on this `versionCode` attribute to know that you've updated your app in the store, but the numbers don't need to be sequential. As long as your new version has a higher `versionCode` value than the previous one, that's cool._
+
+If you've got some funky version numbering you do (e.g. '1.0.rc-02.02Jan2014'), then you're on your own.
 
 #### Usage
 Theres's a test `AndroidManifest.xml` file in the project folder which looks something like:
