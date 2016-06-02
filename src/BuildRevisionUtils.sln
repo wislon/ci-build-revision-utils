@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AndroidManifestUtil", "AndroidManifestUtil\AndroidManifestUtil.csproj", "{CD63C78C-01A0-468E-97AE-4B85DB87DF9A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssemblyInfoUtil", "AssemblyInfoUtil\AssemblyInfoUtil.csproj", "{C8B45D56-7662-4E3B-B2AA-DD956EB03CD5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlistUtil", "PlistUtil\PlistUtil.csproj", "{C48805FB-2D31-426F-9134-12159ED502EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{C8B45D56-7662-4E3B-B2AA-DD956EB03CD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8B45D56-7662-4E3B-B2AA-DD956EB03CD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8B45D56-7662-4E3B-B2AA-DD956EB03CD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C48805FB-2D31-426F-9134-12159ED502EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C48805FB-2D31-426F-9134-12159ED502EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C48805FB-2D31-426F-9134-12159ED502EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C48805FB-2D31-426F-9134-12159ED502EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
