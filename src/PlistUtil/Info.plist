@@ -5,7 +5,7 @@
     <key>CFBundleDisplayName</key>
     <string>MyApp</string>
     <key>CFBundleIdentifier</key>
-    <string>uk.co.nugo.myapp</string>
+    <string>uk.co.domain.myapp</string>
     <key>CFBundleShortVersionString</key>
     <string>1.0.21</string>
     <key>CFBundleVersion</key>
