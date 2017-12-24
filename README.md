@@ -111,6 +111,75 @@ android:versionName="1.0.2.1">
 </manifest>
 ```
 
+### PListUtil (for Info.plist files)
+This updates the `Info.plist` file commonly found in iOS and Xamarin.iOS projects.
+
+Normally when you build your iOS app, you have to provide two version values, a version __number__ (`CFBundleVersion` in the plist file) and a version __string__ (`CFBundleShortVersionString` in the plist file).
+
+The `CFBundleVersion` value is a single integer used by the Apple app store to determine whether the app is a newer version than one it already has. 
+
+The `CFBundleShortVersionString` is a set of numbers (and perhaps other identifiers), as described above, which you can use for "proper" version tracking in your app; maybe for analytics or crash reporting or something else). 
+
+`PlistUtil` extracts the `CFBundleShortVersionString` attribute from the plist file, tries to parse it to extract the version numbers, increments the last one (the build revision), and writes it back to the file. 
+
+It will also extract the `CFBundleVersion` attribute from the plist file, increment it, and writes it back to the file. 
+
+_The Apple app store depends on this `CFBundleVersion` attribute to know that you've updated your app in the store, but the numbers don't need to be sequential. As long as your new version has a higher `CFBundleVersion` value than the previous one._
+
+#### Usage
+Theres's a test `Info.plist` file in the project folder which looks something like:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"[]>
+<plist version="1.0">
+  <dict>
+    ...
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.21</string>
+    <key>CFBundleVersion</key>
+    <string>22</string>
+    ...
+  </dict>
+</plist>
+```
+
+As you can see, the `CFBundleShortVersionString` is set to 1.0.21.
+
+Run the utility from the command line (or script):
+
+```text
+PlistUtil.exe -filename="Info.plist" -increment-short-version
+```
+
+It'll give you some basic info about what it's doing, or if it's got a problem:
+
+```text
+Loading: Info.plist
+New build number: 22
+Current CFBundleShortVersionString: '1.0.21'
+New     CFBundleShortVersionString: '1.0.22'
+Saving: Info.plist
+Done
+```
+
+...and now it looks like:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"[]>
+<plist version="1.0">
+  <dict>
+    ...
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.22</string>
+    <key>CFBundleVersion</key>
+    <string>22</string>
+    ...
+  </dict>
+</plist>
+```
+
 ### AssemblyInfoUtil (for updating .NET AssemblyInfo-related files)
 This updates the `AssemblyVersion` and `AssemblyFileVersion` values commonly found in `AssemblyInfo.cs` (or global/shared versions of them) in .NET projects. 
 
