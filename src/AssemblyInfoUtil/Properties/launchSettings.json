@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AssemblyInfoUtil": {
+      "commandName": "Project",
+      "commandLineArgs": "-filename=GlobalVersionInfo.cs.txt -increment-build-number"
+    }
+  }
+}

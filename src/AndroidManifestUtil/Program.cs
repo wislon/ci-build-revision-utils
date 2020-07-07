@@ -10,15 +10,16 @@ namespace AndroidManifestUtil
     {
 
         private const string filenameToken = "-filename=";
-        private const string resetRevisionNumberToken = "-reset-revision-number";
+        private const string incrementBuildNumberToken = "-increment-build-number";
 
         static void Main(string[] args)
         {
             if (args.Length < 1)
             {
-                Console.WriteLine($"Usage: AndroidManifestUtil.exe -filename=<path\\to\\AndroidManifest.xml> [{resetRevisionNumberToken}]");
-                Console.WriteLine(
-                  "e.g. AndroidManifestUtil.exe ..\\src\\MyProject\\Properties\\AndroidManifest.xml\tWill increment the version code in manifest/android:versionCode, and build number in manifest/android:versionName");
+                Console.WriteLine($"Usage: AndroidManifestUtil.exe -filename=<path\\to\\AndroidManifest.xml> [{incrementBuildNumberToken}]");
+                Console.WriteLine("e.g. AndroidManifestUtil.exe ..\\src\\MyProject\\Properties\\AndroidManifest.xml\tWill increment the version code in manifest/android:versionCode,");
+                Console.WriteLine("and revision number (4th in the quartet) in manifest/android:versionName if used by itself.");
+                Console.WriteLine("Otherwise it'll bump the BUILD number and RESET the revision number to '0'");
             }
             else
             {
@@ -27,11 +28,11 @@ namespace AndroidManifestUtil
                 if (string.IsNullOrWhiteSpace(fileName)) throw new ArgumentException("Version file name must not be empty");
                 if (!File.Exists(fileName)) throw new ArgumentException($"Couldn't locate file '{fileName}'");
 
-                var resetRevisionNumber = args.Any(arg => arg.ToLowerInvariant().Equals(resetRevisionNumberToken));
+                var incrementBuildNumber = args.Any(arg => arg.ToLowerInvariant().Equals(incrementBuildNumberToken));
 
                 // this is just the steadily increasing build number, e.g. '10' or '11'
                 LoadAndUpdateVersionCodeFor(fileName);
-                LoadAndUpdateBuildRevisionFor(fileName, resetRevisionNumber);
+                LoadAndUpdateBuildRevisionFor(fileName, incrementBuildNumber);
             }
 
             // Console.ReadLine();
@@ -78,8 +79,8 @@ namespace AndroidManifestUtil
         /// Tries to locate and update the 'android:versionName' attribute of the 'manifest' tag
         /// </summary>
         /// <param name="fileName"></param>
-        /// <param name="resetRevisionNumber"></param>
-        private static void LoadAndUpdateBuildRevisionFor(string fileName, bool resetRevisionNumber)
+        /// <param name="incrementBuildNumber"></param>
+        private static void LoadAndUpdateBuildRevisionFor(string fileName, bool incrementBuildNumber)
         {
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Loading {0}", fileName);
@@ -95,7 +96,7 @@ namespace AndroidManifestUtil
             if (versionName != null)
             {
                 Console.WriteLine("Found android:versionName attribute: {0}", versionName.Value);
-                var newVersionName = MatchRevisionAndIncrement(versionName, resetRevisionNumber);
+                var newVersionName = MatchRevisionAndIncrement(versionName, incrementBuildNumber);
                 Console.WriteLine("Updating android:versionName attribute to {0}", newVersionName.Value);
                 manifestNode.Attributes.SetNamedItem(newVersionName);
                 Console.WriteLine("Writing out updated manifest file: {0}", fileName);
@@ -111,7 +112,7 @@ namespace AndroidManifestUtil
             Console.WriteLine("Done");
         }
 
-        private static XmlNode MatchRevisionAndIncrement(XmlNode versionNameAttribute, bool resetRevisionNumber)
+        private static XmlNode MatchRevisionAndIncrement(XmlNode versionNameAttribute, bool incrementBuildNumber)
         {
             string versionValue = versionNameAttribute.Value;
             if (string.IsNullOrWhiteSpace(versionValue))
@@ -129,10 +130,19 @@ namespace AndroidManifestUtil
                 int build = int.Parse(match.Groups[3].Value);
                 int revision = int.Parse(match.Groups[4].Value);
 
-                revision = resetRevisionNumber ? 0 : revision + 1;
-
                 Console.WriteLine("Current build revision: '{0}.{1}.{2}.{3}'", major, minor, build, revision);
-                var newRevision = $"{major}.{minor}.{++build}.{revision}";
+
+                if (incrementBuildNumber)
+                {
+                    build++;
+                    revision = 0;
+                }
+                else
+                {
+                    revision++;
+                }
+
+                var newRevision = $"{major}.{minor}.{build}.{revision}";
                 Console.WriteLine("New build revision: {0}", newRevision);
                 versionNameAttribute.Value = newRevision;
             }
