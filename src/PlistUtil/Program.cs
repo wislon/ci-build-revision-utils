@@ -10,7 +10,8 @@ namespace PlistUtil
     {
         // Argument tokens
         private const string FilenameToken = "-filename=";
-        private const string IncrementShortVersionToken = "-increment-short-version";
+        private const string ResetRevisionNumberToken = "-reset-revision-number";
+
 
         private static void Main(string[] args)
         {
@@ -18,13 +19,13 @@ namespace PlistUtil
             {
                 // Get the arguments
                 var filenameArg = args.FirstOrDefault(a => a.StartsWith(FilenameToken, StringComparison.OrdinalIgnoreCase));
-                var incrementShortVersionArg = args.FirstOrDefault(a => a.StartsWith(IncrementShortVersionToken, StringComparison.OrdinalIgnoreCase));
+                var resetRevisionNumber = args.Any(a => a.ToLowerInvariant().Equals(ResetRevisionNumberToken));
 
                 // If the argument doesn't exist or it doesn't have a value
                 if (filenameArg == null || filenameArg.Length == FilenameToken.Length)
                 {
                     // Show help
-                    Console.WriteLine("Usage: PlistUtil.exe -filename=<path\\to\\Info.plist> -increment-short-version");
+                    Console.WriteLine("Usage: PlistUtil.exe -filename=<path\\to\\Info.plist>");
                     Console.WriteLine("e.g. PlistUtil.exe -filename=Info.plist\tWill increment the CFBundleVersion, and CFBundleShortVersionString");
                     return;
                 }
@@ -40,11 +41,8 @@ namespace PlistUtil
                 if (!File.Exists(fileName))
                     throw new ArgumentException($"Couldn't locate file '{fileName}'");
 
-                // Do we need to increment the short version too
-                var incrementShortVersion = incrementShortVersionArg != null;
-
                 // Do the work
-                LoadAndUpdate(fileName, incrementShortVersion);
+                LoadAndUpdate(fileName, resetRevisionNumber);
             }
             catch (Exception ex)
             {
@@ -54,11 +52,13 @@ namespace PlistUtil
         }
 
         /// <summary>
-        /// Load the XML doc and update the build number
+        /// Load the XML doc and update the build number (note that this is 'Apple flavour' xml,
+        /// and doesn't follow normal xml rules; it's like they heard about xml somewhere and decided
+        /// to use it, without actually reading about how to use it properly).
         /// </summary>
         /// <param name="fileName">Path to the info.plist</param>
-        /// <param name="incrementShortVersion">true to update CFBundleShortVersionString as well</param>
-        private static void LoadAndUpdate(string fileName, bool incrementShortVersion)
+        /// <param name="resetRevisionNumber">true to update Reset the last item in the quartet to 0, e.g. '1.0.2.4' becomes '1.0.3.0'</param>
+        private static void LoadAndUpdate(string fileName, bool resetRevisionNumber)
         {
             // Info
             Console.ForegroundColor = ConsoleColor.Green;
@@ -89,9 +89,8 @@ namespace PlistUtil
             // Set the version number
             versionNode.InnerText = nextBuildNumber.ToString();
 
-            // Increment the short version string if necessary
-            if (incrementShortVersion)
-                IncrementShortVersion(shortVersionNode, nextBuildNumber);
+            // update this always
+            IncrementShortVersion(shortVersionNode, nextBuildNumber, resetRevisionNumber);
 
             // Save
             Console.WriteLine("Saving: {0}", fileName);
@@ -105,7 +104,8 @@ namespace PlistUtil
         /// </summary>
         /// <param name="node">xml node to update</param>
         /// <param name="buildNum">new build number</param>
-        private static void IncrementShortVersion(XmlNode node, int buildNum = 0)
+        /// <param name="resetRevisionNumber"></param>
+        private static void IncrementShortVersion(XmlNode node, int buildNum = 0, bool resetRevisionNumber=false)
         {
             // Get the current version 
             var currentValue = node.InnerText;
@@ -115,7 +115,7 @@ namespace PlistUtil
                 currentValue = "1.0.0";
 
             // Regex for matching the version number
-            const string versionMatcher = @"^(\d{1,}).(\d{1,}).(\d{1,})$";
+            const string versionMatcher = @"^(\d{1,}).(\d{1,}).(\d{1,}).(\d{1,})$";
             var rx = new Regex(versionMatcher);
 
             // If it's not a match, we won't touch it
@@ -127,9 +127,12 @@ namespace PlistUtil
             var major = int.Parse(match.Groups[1].Value);
             var minor = int.Parse(match.Groups[2].Value);
             var build = int.Parse(match.Groups[3].Value);
+            var revision = int.Parse(match.Groups[4].Value);
+
+            revision = resetRevisionNumber ? 0 : revision + 1;
 
             // Get the new version
-            var newRevision = $"{major}.{minor}.{buildNum}";
+            var newRevision = $"{major}.{minor}.{buildNum}.{revision}";
 
             // Status
             Console.WriteLine("Current CFBundleShortVersionString: '{0}.{1}.{2}'", major, minor, build);
