@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AndroidManifestUtil": {
+      "commandName": "Project",
+      "commandLineArgs": "-filename=AndroidManifest.xml"
+    }
+  }
+}

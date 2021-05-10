@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PlistUtil": {
+      "commandName": "Project",
+      "commandLineArgs": "-filename=Info.plist -increment-build-number"
+    }
+  }
+}

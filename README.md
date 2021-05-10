@@ -56,7 +56,7 @@ Theres's a test `AndroidManifest.xml` file in the project folder which looks som
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" 
 android:installLocation="auto" package="io.wislon.testApp" 
 android:versionCode="1" 
-android:versionName="1.0.2.0">
+android:versionName="1.0.1.1">
   <uses-sdk android:minSdkVersion="15" android:targetSdkVersion="19" />
   <application android:icon="@drawable/Icon" android:label="testApp">
   </application>
@@ -67,13 +67,15 @@ android:versionName="1.0.2.0">
 </manifest>
 ```
 
-As you can see, the `versionName` is set to 1.0.2.0.
+As you can see, the `versionName` is set to 1.0.1.1.
 
 Run the utility from the command line (or script):
 
 ```text
-AndroidManifestUtil.exe -filename=.\AndroidManifest.xml
+AndroidManifestUtil.exe -filename=.\AndroidManifest.xml [-increment-build-number]
 ```
+
+_If you use the `-increment-build-number` cli argument, it'll increment the BUILD number (the 3rd set in the quartet) and RESET the revision to '0'._
 
 It'll give you some basic info about what it's doing, or if it's got a problem:
 
@@ -90,10 +92,10 @@ Loading D:\Test\AndroidManifest.xml
 Loaded D:\Test\AndroidManifest.xml
 Loading manifest node...
 Getting manifest attributes...
-Found android:versionName attribute: 1.0.2.0
-Current build revision: '1.0.2.0'
-New build revision: 1.0.2.1
-Updating android:versionName attribute to 1.0.2.1
+Found android:versionName attribute: 1.0.1.1
+Current build revision: '1.0.1.1'
+New build revision: 1.0.1.2
+Updating android:versionName attribute to 1.0.1.2
 Writing out updated manifest file: D:\Test\AndroidManifest.xml
 Done
 ```
@@ -106,25 +108,24 @@ Done
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" 
 android:installLocation="auto" package="io.wislon.testApp" 
 android:versionCode="2" 
-android:versionName="1.0.2.1">
+android:versionName="1.0.1.2">
 <snip />
 </manifest>
 ```
 
+__Note: there is NO relationship between the build `versionName` and the `versionCode`, tho most people like to keep them 'in step' with each other, neither of them is derived from the other__
+
+
 ### PListUtil (for Info.plist files)
 This updates the `Info.plist` file commonly found in iOS and Xamarin.iOS projects.
 
-Normally when you build your iOS app, you have to provide two version values, a version __number__ (`CFBundleVersion` in the plist file) and a version __string__ (`CFBundleShortVersionString` in the plist file).
+Normally when you build your iOS app, you have to provide a version __string__ (`CFBundleVersion` in the plist file).
 
-The `CFBundleVersion` value is a single integer used by the Apple app store to determine whether the app is a newer version than one it already has. 
+The `CFBundleVersion` is a set of numbers (and perhaps other identifiers), as described above, which you can use for "proper" version tracking in your app; maybe for analytics or crash reporting or something else). 
 
-The `CFBundleShortVersionString` is a set of numbers (and perhaps other identifiers), as described above, which you can use for "proper" version tracking in your app; maybe for analytics or crash reporting or something else). 
+`PlistUtil` extracts the `CFBundleVersion` attribute from the plist file, tries to parse it to extract the version numbers, increments the last one (the revision or 'patch' version), and writes it back to the file. 
 
-`PlistUtil` extracts the `CFBundleShortVersionString` attribute from the plist file, tries to parse it to extract the version numbers, increments the last one (the build revision), and writes it back to the file. 
-
-It will also extract the `CFBundleVersion` attribute from the plist file, increment it, and writes it back to the file. 
-
-_The Apple app store depends on this `CFBundleVersion` attribute to know that you've updated your app in the store, but the numbers don't need to be sequential. As long as your new version has a higher `CFBundleVersion` value than the previous one._
+_If you use the `-increment-build-number` cli argument, it'll increment the BUILD number (the 3rd set in the quartet) and RESET the revision to '0'._
 
 #### Usage
 Theres's a test `Info.plist` file in the project folder which looks something like:
@@ -135,30 +136,28 @@ Theres's a test `Info.plist` file in the project folder which looks something li
 <plist version="1.0">
   <dict>
     ...
-    <key>CFBundleShortVersionString</key>
-    <string>1.0.21</string>
     <key>CFBundleVersion</key>
-    <string>22</string>
+    <string>1.0.1.1</string>
     ...
   </dict>
 </plist>
 ```
 
-As you can see, the `CFBundleShortVersionString` is set to 1.0.21.
+As you can see, the `CFBundleVersion` is set to `1.0.1.0`.
 
 Run the utility from the command line (or script):
 
 ```text
-PlistUtil.exe -filename="Info.plist" -increment-short-version
+PlistUtil.exe -filename="Info.plist" [-increment-build-number]
 ```
 
 It'll give you some basic info about what it's doing, or if it's got a problem:
 
 ```text
 Loading: Info.plist
-New build number: 22
-Current CFBundleShortVersionString: '1.0.21'
-New     CFBundleShortVersionString: '1.0.22'
+New build number: 2
+Current CFBundleShortVersionString: '1.0.1.1'
+New     CFBundleShortVersionString: '1.0.1.2'
 Saving: Info.plist
 Done
 ```
@@ -171,10 +170,8 @@ Done
 <plist version="1.0">
   <dict>
     ...
-    <key>CFBundleShortVersionString</key>
-    <string>1.0.22</string>
     <key>CFBundleVersion</key>
-    <string>22</string>
+    <string>1.0.1.2</string>
     ...
   </dict>
 </plist>
@@ -190,10 +187,10 @@ Similarly to the AndroidManifestUtil, simply point the `-filename` parameter at 
 
 Run the utility from the command line (or script):
 ```text
-AssemblyInfoUtil.exe -filename=.\GlobalVersionInfo.cs.txt
+AssemblyInfoUtil.exe -filename=.\GlobalVersionInfo.cs.txt [-increment-build-number]
 ```
 
-_(it has a '.txt' extension because Visual Studio kept trying to compile it into the application, and then couldn't write to it when running the debugger :)). This won't be a problem when you point it at a 'real' file from a command line._
+_(this test file a '.txt' extension because Visual Studio kept trying to compile it into the application, and then couldn't write to it when running the debugger :)). This won't be a problem when you point it at a 'real' file from a command line._
 
 This file will look something like:
 
@@ -209,8 +206,8 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision 
 // Numbers by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.2.0")]
-[assembly: AssemblyFileVersion("1.0.2.0")]
+[assembly: AssemblyVersion("1.0.1.1")]
+[assembly: AssemblyFileVersion("1.0.1.1")]
 ```
 
 
@@ -219,19 +216,19 @@ D:\test\AssemblyInfoUtil.exe -filename=.\GlobalVersionInfo.cs.txt
 Loading .\GlobalVersionInfo.cs.txt
 Loaded .\GlobalVersionInfo.cs.txt
 Looking for AssemblyVersion line...
-Current build revision: '1.0.2.0'
-New build revision: 1.0.2.1
+Current build revision: '1.0.1.1'
+New build revision: 1.0.1.2
 Looking for AssemblyFileVersion line...
-Current build revision: '1.0.2.0'
-New build revision: 1.0.2.1
+Current build revision: '1.0.1.1'
+New build revision: 1.0.1.2
 Revision updated. Writing out new .\GlobalVersionInfo.cs.txt
 Done
 ```
 
 With the result:
 ```csharp
-[assembly: AssemblyVersion("1.0.2.1")]
-[assembly: AssemblyFileVersion("1.0.2.1")]
+[assembly: AssemblyVersion("1.0.1.2")]
+[assembly: AssemblyFileVersion("1.0.1.2")]
 ```
 
 And that's pretty much it.
