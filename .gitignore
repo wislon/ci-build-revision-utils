@@ -186,6 +186,3 @@ UpgradeLog*.htm
 
 # Microsoft Fakes
 FakesAssemblies/
-/.vs/slnx.sqlite
-/.vs/ci-build-revision-utils/v16/TestStore/0
-/src/.vs/BuildRevisionUtils/v16/TestStore/0
