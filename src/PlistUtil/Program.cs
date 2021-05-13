@@ -52,7 +52,7 @@ namespace PlistUtil
         /// to use it, without actually reading about how to use it properly).
         /// </summary>
         /// <param name="fileName">Path to the info.plist</param>
-        /// <param name="resetRevisionNumber">true to update Reset the last item in the quartet to 0, e.g. '1.0.2.4' becomes '1.0.3.0'</param>
+        /// <param name="incrementBuildNumber">true to update Reset the last item in the quartet to 0, e.g. '1.0.2.4' becomes '1.0.3.0'</param>
         private static void LoadAndUpdate(string fileName, bool incrementBuildNumber)
         {
             // Info

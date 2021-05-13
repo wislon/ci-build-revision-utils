@@ -2,36 +2,33 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Xml;
 
 namespace AssemblyInfoUtil
 {
-    class Program
+    internal class Program
     {
         private static bool _versionUpdated;
-        private const string filenameToken = "-filename=";
 
-        private const string incrementBuildNumberToken = "-increment-build-number";
+        private const string FilenameToken = "-filename=";
+        private const string IncrementBuildNumberToken = "-increment-build-number";
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             if (args.Length < 1)
             {
-                Console.WriteLine($"Usage: AssemblyInfoUtil.exe -filename=<file containing assembly version> [{incrementBuildNumberToken}]");
+                Console.WriteLine($"Usage: AssemblyInfoUtil.exe -filename=<file containing assembly version> [{IncrementBuildNumberToken}]");
                 Console.WriteLine(
                   "e.g. AssemblyInfoUtil.exe ..\\src\\MyProject\\SharedAssemblyVersion.cs\tWill increment the REVISION (i.e. last in the quartet) in SharedAssemblyVersion.cs\r\nboth AssemblyVersion and AssemblyFileVersion will be updated");
             }
             else
             {
                 // remember in debug mode, this file passed on the debug command line will be in the bin\Debug\ folder :)
-                string fileName = args.FirstOrDefault(a => a.StartsWith(filenameToken, StringComparison.OrdinalIgnoreCase)).Substring(filenameToken.Length);
+                var fileName = args.FirstOrDefault(a => a.StartsWith(FilenameToken, StringComparison.OrdinalIgnoreCase))?.Substring(FilenameToken.Length);
                 if (string.IsNullOrWhiteSpace(fileName)) throw new ArgumentException("Version file name must not be empty");
                 if (!File.Exists(fileName)) throw new ArgumentException($"Couldn't locate file '{fileName}'");
 
-                var incrementBuildNumber = args.Any(arg => arg.ToLowerInvariant().Equals(incrementBuildNumberToken));
+                var incrementBuildNumber = args.Any(arg => arg.ToLowerInvariant().Equals(IncrementBuildNumberToken));
 
                 LoadAndUpdateBuildRevisionFor(fileName, incrementBuildNumber);
             }
@@ -73,11 +70,11 @@ namespace AssemblyInfoUtil
         {
             // [assembly: AssemblyVersion("1.0.2.0")]
             // [assembly: AssemblyFileVersion("1.0.2.0")]
-            string matchingLine = assemblyFile.FirstOrDefault(l => l.Contains(assemblyVersionKey) && !l.Contains("//"));
+            var matchingLine = assemblyFile.FirstOrDefault(l => l.Contains(assemblyVersionKey) && !l.Contains("//"));
             if (!string.IsNullOrWhiteSpace(matchingLine))
             {
-                int index = assemblyFile.ToList().IndexOf(matchingLine);
-                string newRevisionLine = MatchRevisionAndIncrement(matchingLine, incrementBuildNumber);
+                var index = assemblyFile.ToList().IndexOf(matchingLine);
+                var newRevisionLine = MatchRevisionAndIncrement(matchingLine, incrementBuildNumber);
                 assemblyFile[index] = newRevisionLine; // overwrite the old one.
                 _versionUpdated = true;
             }
@@ -96,11 +93,11 @@ namespace AssemblyInfoUtil
 
             if (rx.IsMatch(versionLine))
             {
-                Match match = rx.Match(versionLine);
-                int major = int.Parse(match.Groups[1].Value);
-                int minor = int.Parse(match.Groups[2].Value);
-                int build = int.Parse(match.Groups[3].Value);
-                int revision = int.Parse(match.Groups[4].Value);
+                var match = rx.Match(versionLine);
+                var major = int.Parse(match.Groups[1].Value);
+                var minor = int.Parse(match.Groups[2].Value);
+                var build = int.Parse(match.Groups[3].Value);
+                var revision = int.Parse(match.Groups[4].Value);
 
                 Console.WriteLine("Current build revision: '{0}.{1}.{2}.{3}'", major, minor, build, revision);
 
