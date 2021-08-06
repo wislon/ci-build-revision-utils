@@ -138,13 +138,14 @@ namespace PlistUtil
         /// </summary>
         private static string ConvertToString(XmlDocument doc)
         {
-            var sb = new StringBuilder();
+            var sb = new StringWriterWithEncoding();
             var settings = new XmlWriterSettings
             {
                 Indent = true,
                 IndentChars = "  ",
                 NewLineChars = "\r\n",
-                NewLineHandling = NewLineHandling.Replace
+                NewLineHandling = NewLineHandling.Replace,
+                Encoding = Encoding.UTF8
             };
             using (var writer = XmlWriter.Create(sb, settings))
             {
