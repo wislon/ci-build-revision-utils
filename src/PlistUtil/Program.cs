@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 
@@ -73,7 +74,10 @@ namespace PlistUtil
             IncrementCFBundleVersion(versionNode, incrementBuildNumber);
 
             Console.WriteLine("Saving: {0}", fileName);
-            xmlDoc.Save(fileName);
+            
+            // Convert the XmlDocument to a string and replace the square brackets
+            var content = ConvertToString(xmlDoc).Replace("[]>", ">");
+            File.WriteAllText(fileName, content);
             Console.ResetColor();
             Console.WriteLine("Done");
         }
@@ -97,8 +101,23 @@ namespace PlistUtil
             var rx = new Regex(versionMatcher);
 
             // If it's not a match, we won't touch it
-            if (!rx.IsMatch(currentValue))
+            if (!rx.IsMatch(currentValue) && Regex.IsMatch(currentValue, @"^\d+$"))
+            {
+                var num = int.Parse(currentValue) + 1;
+
+                // Get the new version
+
+                Console.WriteLine("New     CFBundleVersion: '{0}'", num);
+
+                // Update the xml
+                node.InnerText = $"{num}";
+
                 return;
+            }
+            if (!rx.IsMatch(currentValue))
+            {
+                return;
+            }
 
             // Get the matches
             var match = rx.Match(currentValue);
@@ -126,6 +145,28 @@ namespace PlistUtil
 
             // Update the xml
             node.InnerText = newRevision;
+        }
+
+        /// <summary>
+        /// Convert the XmlDocument to a string preserving formatting (indent, newlines).
+        /// From: https://stackoverflow.com/questions/203528/what-is-the-simplest-way-to-get-indented-xml-with-line-breaks-from-xmldocument
+        /// </summary>
+        private static string ConvertToString(XmlDocument doc)
+        {
+            var sb = new StringWriterWithEncoding();
+            var settings = new XmlWriterSettings
+            {
+                Indent = true,
+                IndentChars = "  ",
+                NewLineChars = "\r\n",
+                NewLineHandling = NewLineHandling.Replace,
+                Encoding = Encoding.UTF8
+            };
+            using (var writer = XmlWriter.Create(sb, settings))
+            {
+                doc.Save(writer);
+            }
+            return sb.ToString();
         }
     }
 }
