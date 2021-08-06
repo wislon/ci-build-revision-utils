@@ -101,8 +101,23 @@ namespace PlistUtil
             var rx = new Regex(versionMatcher);
 
             // If it's not a match, we won't touch it
-            if (!rx.IsMatch(currentValue))
+            if (!rx.IsMatch(currentValue) && Regex.IsMatch(currentValue, @"^\d+$"))
+            {
+                var num = int.Parse(currentValue) + 1;
+
+                // Get the new version
+
+                Console.WriteLine("New     CFBundleVersion: '{0}'", num);
+
+                // Update the xml
+                node.InnerText = $"{num}";
+
                 return;
+            }
+            if (!rx.IsMatch(currentValue))
+            {
+                return;
+            }
 
             // Get the matches
             var match = rx.Match(currentValue);
