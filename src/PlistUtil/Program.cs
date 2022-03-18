@@ -94,10 +94,11 @@ namespace PlistUtil
 
             // Apply a default if empty
             if (string.IsNullOrWhiteSpace(currentValue))
-                currentValue = "1.0.0.0";
+                currentValue = "1.0.0";
 
-            // Regex for matching the version number
-            const string versionMatcher = @"^(\d{1,}).(\d{1,}).(\d{1,}).(\d{1,})$";
+            // Regex for matching the version number. Note that it's only 3 parts. The App Store
+            // will NOT accept a 4-part version number, and the app will be rejected immediately.
+            const string versionMatcher = @"^(\d{1,}).(\d{1,}).(\d{1,})$";
             var rx = new Regex(versionMatcher);
 
             // If it's not a match, we won't touch it
@@ -116,6 +117,7 @@ namespace PlistUtil
             }
             if (!rx.IsMatch(currentValue))
             {
+                Console.WriteLine($"'CFBundleVersion' section located, but no regex match for '{versionMatcher}' value found");
                 return;
             }
 
@@ -124,24 +126,18 @@ namespace PlistUtil
             var major = int.Parse(match.Groups[1].Value);
             var minor = int.Parse(match.Groups[2].Value);
             var build = int.Parse(match.Groups[3].Value);
-            var revision = int.Parse(match.Groups[4].Value);
 
-            Console.WriteLine("Current CFBundleVersion: '{0}.{1}.{2}.{3}'", major, minor, build, revision);
+            Console.WriteLine("Current CFBundleVersion: '{0}.{1}.{2}'", major, minor, build);
 
             if (incrementBuildNumber)
             {
                 build++;
-                revision = 0;
-            }
-            else
-            {
-                revision++;
             }
 
             // Get the new version
-            var newRevision = $"{major}.{minor}.{build}.{revision}";
+            var newRevision = $"{major}.{minor}.{build}";
 
-            Console.WriteLine("New     CFBundleVersion: '{0}'", newRevision);
+            Console.WriteLine("New     CFBundleVersion: '{0}' (Remember: Apple App Store only accepts 3-part versions!)", newRevision);
 
             // Update the xml
             node.InnerText = newRevision;
