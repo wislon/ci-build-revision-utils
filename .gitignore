@@ -189,3 +189,7 @@ FakesAssemblies/
 **/.dtbcache.v2
 /.vs
 /src/.vs
+
+# macOS crap
+.DS_Store
+
