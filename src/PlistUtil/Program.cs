@@ -64,16 +64,21 @@ namespace PlistUtil
             var xmlDoc = new XmlDocument();
             xmlDoc.Load(fileName);
 
-            // Get the bundleVersionNode to be updated
-            var bundleVersionNode = xmlDoc.SelectSingleNode("/plist/dict/key[contains(., 'CFBundleVersion')]/following-sibling::string[1]");
-            if (bundleVersionNode == null)
-                throw new NullReferenceException("Cannot find CFBundleVersion in plist");
-
-            var bundleShortVersionStringNode = xmlDoc.SelectSingleNode("/plist/dict/key[contains(., 'CFBundleShortVersionString')]/following-sibling::string[1]");
-            if (bundleShortVersionStringNode == null)
+            // for the difference between CFBundleVersion and CFBundleShortVersion, see https://hboon.com/difference-between-cfbundleversion-and-cfbundleshortversionstring/
+            // it's counter-intuitive: the ShortVersion is the version they see in the app-store (i.e. 1.2.3) and the Version is the build-revision number (would normally
+            // show up as the 4th segment in a 4-segment version string).
+            
+            // this is the actual 3-segment version we need to work with.
+            var appVersionNode = xmlDoc.SelectSingleNode("/plist/dict/key[contains(., 'CFBundleShortVersionString')]/following-sibling::string[1]");
+            if (appVersionNode == null)
                 throw new NullReferenceException("Cannot find CFBundleShortVersionString in plist");
             
-            IncrementCFBundleVersion(bundleVersionNode, bundleShortVersionStringNode, incrementBuildNumber);
+            // this is the build revision (would be the last segment in a 4-segment version string)
+            var revisionNode = xmlDoc.SelectSingleNode("/plist/dict/key[contains(., 'CFBundleVersion')]/following-sibling::string[1]");
+            if (revisionNode == null)
+                throw new NullReferenceException("Cannot find CFBundleVersion in plist");
+            
+            IncrementVersion(appVersionNode, revisionNode , incrementBuildNumber);
 
             Console.WriteLine("Saving: {0}", fileName);
             
@@ -87,22 +92,22 @@ namespace PlistUtil
         /// <summary>
         /// Increment the short version using the build number provided
         /// </summary>
-        /// <param name="bundleVersionNode">xml bundleVersionNode to update</param>
-        /// <param name="bundleShortVersionStringNode"></param>
+        /// <param name="revisionNode">xml revisionNode to update</param>
+        /// <param name="appVersionNode"></param>
         /// <param name="incrementBuildNumber">If false, will just bump the revision, otherwise the entire build number (will reset revision to '0')</param>
-        private static void IncrementCFBundleVersion(XmlNode bundleVersionNode, XmlNode bundleShortVersionStringNode, bool incrementBuildNumber)
+        private static void IncrementVersion(XmlNode appVersionNode, XmlNode revisionNode, bool incrementBuildNumber)
         {
             const string revisionNumberZero = "0";
             if (incrementBuildNumber)
             {
-                Console.WriteLine("'IncrementBuildNumber' is set, so the revision/patch number ('CFBundleShortVersionString' will be reset to '0')");
+                Console.WriteLine("'IncrementBuildNumber' is set, so the revision/patch number ('CFBundleVersion' will be reset to '0')");
             }
             // Get the current version 
-            var currentBuildVersionString = bundleVersionNode.InnerText;
+            var currentAppVersionString = appVersionNode.InnerText;
 
             // Apply a default if empty
-            if (string.IsNullOrWhiteSpace(currentBuildVersionString))
-                currentBuildVersionString = "1.0.0";
+            if (string.IsNullOrWhiteSpace(currentAppVersionString))
+                currentAppVersionString = "1.0.0";
 
             // Regex for matching the version number. Note that it's only 3 parts. The App Store
             // will NOT accept a 4-part version number, and the app will be rejected immediately.
@@ -110,35 +115,34 @@ namespace PlistUtil
             var rx = new Regex(versionMatcher);
 
             // If it's not a '1.2.3' match, but is a single number, we'll bump it here and bail out.
-            if (!rx.IsMatch(currentBuildVersionString) && Regex.IsMatch(currentBuildVersionString, @"^\d+$"))
+            if (!rx.IsMatch(currentAppVersionString) && Regex.IsMatch(currentAppVersionString, @"^\d+$"))
             {
-                var num = int.Parse(currentBuildVersionString) + 1;
+                var num = int.Parse(currentAppVersionString) + 1;
             
                 // Get the new version
             
-                Console.WriteLine("New     CFBundleVersion: '{0}'", num);
+                Console.WriteLine("New CFBundleShortVersionString: '{0}'", num);
             
                 // Update the xml
-                bundleVersionNode.InnerText = $"{num}";
+                appVersionNode.InnerText = $"{num}";
                 // and force the revision back to 0
-                bundleShortVersionStringNode.InnerText = "0";
-            
+                revisionNode.InnerText = "0";
                 return;
             }
             
-            if (!rx.IsMatch(currentBuildVersionString))
+            if (!rx.IsMatch(currentAppVersionString))
             {
-                Console.WriteLine($"'CFBundleVersion' section located, but no regex match for '{versionMatcher}' value found");
+                Console.WriteLine($"'CFBundleShortVersionString' section located, but no regex match for '{versionMatcher}' value found");
                 return;
             }
 
             // Get the matches
-            var match = rx.Match(currentBuildVersionString);
+            var match = rx.Match(currentAppVersionString);
             var major = int.Parse(match.Groups[1].Value);
             var minor = int.Parse(match.Groups[2].Value);
             var build = int.Parse(match.Groups[3].Value);
 
-            Console.WriteLine("Current CFBundleVersion: '{0}.{1}.{2}'", major, minor, build);
+            Console.WriteLine("Current CFBundleShortVersionString: '{0}.{1}.{2}'", major, minor, build);
 
             if (incrementBuildNumber)
             {
@@ -146,15 +150,15 @@ namespace PlistUtil
             }
 
             var newBuildVersion = $"{major}.{minor}.{build}";
-            Console.WriteLine("New     CFBundleVersion: '{0}' (Remember: Apple App Store only accepts 3-part versions!)", newBuildVersion);
+            Console.WriteLine("New     CFBundleShortVersionString: '{0}' (Remember: Apple App Store only accepts 3-part versions!)", newBuildVersion);
             // Update the xml
-            bundleVersionNode.InnerText = newBuildVersion;
+            appVersionNode.InnerText = newBuildVersion;
             
             // now handle the revision number
-            var currentRevisionString = bundleShortVersionStringNode.InnerText;
+            var currentRevisionString = revisionNode.InnerText;
 
             // Apply a default if empty
-            if (string.IsNullOrWhiteSpace(currentBuildVersionString))
+            if (string.IsNullOrWhiteSpace(currentRevisionString))
             {
                 currentRevisionString = revisionNumberZero;
             }
@@ -172,7 +176,7 @@ namespace PlistUtil
                         break;
                 }
                 Console.WriteLine("New CFBundleShortVersionString: '{0}'", currentRevision);
-                bundleShortVersionStringNode.InnerText = $"{currentRevision}";
+                revisionNode.InnerText = $"{currentRevision}";
                 return;
             }
             
