@@ -9,7 +9,8 @@
 
   <ItemGroup>
     <None Update="Info.plist">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <!-- otherwise repeated runs of this console app will appear to only increment from 1.0.0 to 1.0.1 -->
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
